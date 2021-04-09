@@ -1,12 +1,8 @@
-#!/usr/bin/env python
-
 import validators
 import yaml
-import json
 import urllib.parse
 import panflute as pf
 from typing import Union
-import io
 import re
 
 first_header = True
@@ -23,9 +19,9 @@ def move_properties(elem: pf.Element, doc: pf.Doc) -> Union[list[pf.Element], pf
                 text_so_far += '\n'
             else:
                 text_so_far += pf.tools.stringify(child)
-        yaml_dict = yaml.safe_load('\n'.join(['"' + line[:line.index(':')] + '":' \
+        yaml_dict = yaml.safe_load('\n'.join(['"' + line[:line.index(':')] + '":'
                                               + urllib.parse.unquote(line[line.index(':') + 1:])
-                                              for line in text_so_far.split('\n')]))
+                                              for line in text_so_far.replace("*", "\\*").split('\n')]))
         for key in yaml_dict:
             doc.metadata[key] = yaml_dict[key]
         return []
@@ -36,20 +32,31 @@ def decrement_headers(elem: pf.Element, doc: pf.Doc) -> Union[list[pf.Element], 
     if not first_header and isinstance(elem, pf.Header):
         elem.level += 1
         return elem
-        # return pf.Header(elem.content, level=elem.level + 1,)
-    else:
+    elif isinstance(elem, pf.Header):
         first_header = False
 
 
 def fix_local_links(elem: pf.Element, doc: pf.Doc) -> Union[list[pf.Element], pf.Element, None]:
-    if isinstance(elem, pf.Link) and not validators.url(elem.url) and elem.url.split('.')[-1] == 'md':
+    if isinstance(elem, pf.Link) and not validators.url(elem.url):
         return pf.Link(*[subelem.walk(remove_uuids) for subelem in elem.content],
-                       url=re.sub(" [\da-z]{32}", "", urllib.parse.unquote(elem.url)))
+                       url=re.sub(r"\.csv$", "/", re.sub(r" [\da-z]{32}", "",
+                                  urllib.parse.unquote(elem.url))),
+                       title=elem.title,
+                       identifier=elem.identifier,
+                       classes=elem.classes,
+                       attributes=elem.attributes)
+    elif isinstance(elem, pf.Image) and not validators.url(elem.url):
+        return pf.Image(*[subelem.walk(remove_uuids) for subelem in elem.content],
+                        url=re.sub(r" [\da-z]{32}", "",
+                                   urllib.parse.unquote(elem.url)),
+                        identifier=elem.identifier,
+                        classes=elem.classes,
+                        attributes=elem.attributes)
 
 
 def remove_uuids(elem: pf.Element, doc: pf.Doc) -> Union[list[pf.Element], pf.Element, None]:
     if isinstance(elem, pf.Str):
-        return pf.Str(re.sub(" [\da-z]{32}", "", elem.text))
+        return pf.Str(re.sub(" [\\da-z]{32}", "", elem.text))
 
 
 def main(doc=None):

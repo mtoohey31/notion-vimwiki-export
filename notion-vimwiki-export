@@ -1,0 +1,88 @@
+#!/usr/bin/env sh
+
+IFS="|"
+
+rename_weird() {
+  newpath=$(echo "$@" | LANG=C sed 's/[\x80-\xFF]//g')
+  if [[ $newpath != $@ ]]
+  then
+    mv "$@" "$newpath"
+    echo $newpath
+  else
+    echo "$@"
+  fi
+}
+
+rename_uuid() {
+  newpath=$(echo "$@" | perl -lpe 's/(.*) [0-9a-z]{32}(?=(\.\w+)?$)/\1/')
+  if [[ $newpath != $@ ]]
+  then
+    mv "$@" "$newpath"
+  fi
+}
+
+format_dir() {
+  for path in "$*"/*
+  do
+    path=$(realpath $(rename_weird "$path"))
+    if [[ -d $path ]]
+    then
+      format_dir "$path"
+    elif [[ -e $path && $path == *".md" ]]
+    then
+      parent_dir=$(realpath "$(dirname $path)")
+      if [[ -e "$parent_dir.csv" ]]
+      then
+        format_front_matter "$path"
+      else
+        format_normal "$path"
+      fi
+    else
+      rename_uuid "$path"
+    fi
+  done
+
+  for path in "$*"/*
+  do
+    if [[ -e $path && $path == *".csv" ]]
+    then
+      rm "$path"
+    fi
+  done
+
+  rename_uuid "$@"
+}
+
+format_normal() {
+  pandoc "$@" --filter "$SOURCE/src/filter_normal.py" -s -o "$@" && prettier --loglevel warn --write "$@"
+  rename_uuid "$@"
+}
+
+format_front_matter() {
+  pandoc "$@" --filter "$SOURCE/src/filter_front_matter.py" -s -o "$@" && prettier --loglevel warn --write "$@"
+  rename_uuid "$@"
+}
+
+main() {
+  SOURCE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+  for path in "$*"
+  do
+    path=$(realpath $path)
+    if [[ -d $path ]]
+    then
+      format_dir $path
+    elif [[ -e $path && $path == *".md" ]]
+    then
+      path=$(realpath $(rename_weird "$path"))
+      parent_dir=$(realpath "$(dirname $path)")
+      if [[ -e "$parent_dir.csv" ]]
+      then
+        format_front_matter "$path"
+      else
+        format_normal "$path"
+      fi
+    fi
+  done
+}
+
+main "$*"
