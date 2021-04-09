@@ -1,6 +1,6 @@
 # Notion VimWiki Markdown Export
 
-A Bash script in combination with a [Panflute](https://github.com/sergiocorreia/panflute/) Pandoc filter to convert Notion exports to a format suitable for [VimWiki](https://github.com/vimwiki/vimwiki/). See [What Does It Do?](#what-does-it-do%3F) for a list of ways it modifies the export.
+A Bash script in combination with a [Panflute](https://github.com/sergiocorreia/panflute/) Pandoc filter to convert Notion exports to a format suitable for [VimWiki](https://github.com/vimwiki/vimwiki/). See [What Does It Do?](#what-does-it-do) for a list of ways it modifies the export.
 
 ## Usage
 
