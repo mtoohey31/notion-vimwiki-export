@@ -1,5 +1,42 @@
-# Notion Vimwiki Markdown Export
+# Notion VimWiki Markdown Export
 
-A work in progress project for converting Notion Markdown & CSV exports to a Vimwiki markdown compatible formats. To be clear, this is designed to output to a flavour of markdown compatible with Wimwiki, not to Vimwiki's usual syntax. At this point, "work in progress" means it's not usable yet, though I hope it will be soon :smile:.
+A Bash script in combination with a [Panflute](https://github.com/sergiocorreia/panflute/) Pandoc filter to convert Notion exports to a format suitable for [VimWiki](https://github.com/vimwiki/vimwiki/). See [What Does It Do?](#what-does-it-do%3F) for a list of ways it modifies the export.
 
-This project current makes use of [Panflute](https://github.com/sergiocorreia/panflute/) for parsing markdown files, among other tools.
+## Usage
+
+Start by cloning this repository and `cd`'ing into it:
+
+```bash
+git clone https://github.com/mtoohey31/notion-vimwiki-export
+cd notion-vimwiki-export
+```
+
+Then run the script, providing it the path to your unzipped notion export (you will have to replace the variable below with the path):
+
+```bash
+./notion-vimwiki-export $PATH_TO_UNZIPPED_NOTION_EXPORT
+```
+
+## What Does It Do?
+
+Here's a list of ways the script currently modifies the export:
+
+- Increases the depth of each header by 1, other than the first header.
+- Decodes local file links so they're more readable, i.e.: `[A File](./A%20File.pdf)` becomes `[A File](./A File.pdf)`.
+- Places properties from databases in YAML front-matter instead of in the markdown text.
+- Removes CSV files to reduce clutter.
+- Renames folders and files containing non-ascii characters.
+- Formats markdown files first with Pandoc (which happens when the filter is being run), then with [prettier](https://prettier.io/).
+
+## What Could It Do?
+
+Here's a list of ways I'd like to improve the script in the future:
+
+- Handle file/folder name collisions.
+- Be more selective about which characters are removed from filenames (after testing which characters break prettier).
+
+## Similar Projects
+
+- [Notion-to-Obsidian-Converter](https://github.com/connertennery/Notion-to-Obsidian-Converter)
+
+- [Notion-2-Obsidan](https://github.com/visualcurrent/Notion-2-Obsidan)
