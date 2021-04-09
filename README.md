@@ -17,6 +17,8 @@ Then run the script, providing it the path to your unzipped notion export (you w
 ./notion-vimwiki-export $PATH_TO_UNZIPPED_NOTION_EXPORT
 ```
 
+That should be it! It will run without output unless it runs into an issue, like a good command line application, so don't worry if you're not seeing anything happening. If you run into any problems, feel free to open an issue on this repository.
+
 ## What Does It Do?
 
 Here's a list of ways the script currently modifies the export:
