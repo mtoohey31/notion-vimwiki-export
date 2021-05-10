@@ -36,6 +36,8 @@ Here's a list of ways I'd like to improve the script in the future:
 
 - Handle file/folder name collisions.
 - Be more selective about which characters are removed from filenames (after testing which characters break prettier).
+- Escape local paths.
+- Relocate file properties to inside the object folder and fix the path.
 
 ## Similar Projects
 
