@@ -54,12 +54,12 @@ format_dir() {
 }
 
 format_normal() {
-  pandoc "$@" --filter "$SOURCE/src/filter_normal.py" -s -o "$@" && prettier --loglevel warn --write "$@"
+  pandoc "$@" --filter "$SOURCE/src/filter_normal.py" -s -t gfm+tex_math_dollars -o "$@" && prettier --loglevel warn --write "$@"
   rename_uuid "$@"
 }
 
 format_front_matter() {
-  pandoc "$@" --filter "$SOURCE/src/filter_front_matter.py" -s -o "$@" && prettier --loglevel warn --write "$@"
+  pandoc "$@" --filter "$SOURCE/src/filter_front_matter.py" -s -t gfm+tex_math_dollars -o "$@" && prettier --loglevel warn --write "$@"
   rename_uuid "$@"
 }
 
