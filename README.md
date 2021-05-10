@@ -11,6 +11,12 @@ git clone https://github.com/mtoohey31/notion-vimwiki-export
 cd notion-vimwiki-export
 ```
 
+Then install the required python modules:
+
+```bash
+pip3 install -r requirements.txt
+```
+
 Then run the script, providing it the path to your unzipped notion export (you will have to replace the variable below with the path):
 
 ```bash

@@ -1,0 +1,2 @@
+validators==0.18.2
+panflute==2.0.5
