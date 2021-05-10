@@ -39,14 +39,15 @@ def decrement_headers(elem: pf.Element, doc: pf.Doc) -> Union[list[pf.Element], 
 def fix_local_links(elem: pf.Element, doc: pf.Doc) -> Union[list[pf.Element], pf.Element, None]:
     if isinstance(elem, pf.Link) and not validators.url(elem.url):
         return pf.Link(*[subelem.walk(remove_uuids) for subelem in elem.content],
+                       title=urllib.parse.unquote(elem.title),
                        url=re.sub(r"\.csv$", "/", re.sub(r" [\da-z]{32}", "",
                                   urllib.parse.unquote(elem.url))),
-                       title=elem.title,
                        identifier=elem.identifier,
                        classes=elem.classes,
                        attributes=elem.attributes)
     elif isinstance(elem, pf.Image) and not validators.url(elem.url):
         return pf.Image(*[subelem.walk(remove_uuids) for subelem in elem.content],
+                        title=elem.title,
                         url=re.sub(r" [\da-z]{32}", "",
                                    urllib.parse.unquote(elem.url)),
                         identifier=elem.identifier,
@@ -56,7 +57,7 @@ def fix_local_links(elem: pf.Element, doc: pf.Doc) -> Union[list[pf.Element], pf
 
 def remove_uuids(elem: pf.Element, doc: pf.Doc) -> Union[list[pf.Element], pf.Element, None]:
     if isinstance(elem, pf.Str):
-        return pf.Str(re.sub(" [\\da-z]{32}", "", elem.text))
+        return pf.Str(re.sub(r" [\da-z]{32}", "", urllib.parse.unquote(elem.text)))
 
 
 def main(doc=None):
